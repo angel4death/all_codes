@@ -1,0 +1,5 @@
+#include<iostream>
+int st1[1004],st2[1004],us[1004],cl[1004];
+int BFS1(int ver)
+{
+  int start=0;

@@ -1,0 +1,228 @@
+#include<string>
+#include<cstdio>
+#include<cstring>
+#include<cmath>
+#include<cstdlib>
+#include<algorithm>
+#include<map>
+#include<vector>
+#include<iostream>
+#include<deque>
+#include<queue>
+#include<stack>
+#include<set>
+#include<ctime>
+#define LL __int64
+#define eps 1e-8
+#define zero(x) ((x > +eps) - (x < -eps))
+#define mem(a,b) memset(a,b,sizeof(a))
+#define MOD 1000000007
+#define INF 99999999
+#define MAX 100010
+using namespace std;
+
+int n, m;
+int a[6], b[21];
+char str[6][22];
+vector<int> v[6];
+int num[1<<5][1<<5][6], cnt[1<<5];
+//int dp[21][1<<5][11][11][11][11][11];
+char pre[21][1<<5][11][11][11][11][11];
+
+void init(int x)
+{
+    int sta = 1<<x;
+    for(int i = 0; i < sta; i ++)
+    {
+        int re = i, flag = 0, cc = 0;
+        while(re)
+        {
+            if(re&1)
+            {
+                if(!flag)
+                {
+                    cc ++;
+                    flag = 1;
+                }
+            }
+            else
+            {
+                flag = 0;
+            }
+            re >>= 1;
+        }
+        cnt[i] = cc;
+        v[cc].push_back(i);
+    }
+    for(int i = 0; i < sta; i ++)
+    {
+        for(int j = 0; j < sta; j ++)
+        {
+            for(int k = 0; k < x; k ++)
+            {
+                if((i&(1<<k)) == 0 && (j&(1<<k)) != 0)
+                {
+                    num[i][j][k] = 1;
+                }
+            }
+        }
+    }
+}
+
+int main()
+{
+    
+    while(~scanf("%d%d",&n,&m))
+    {
+        init(n);
+        for(int i = 1; i <= n; i ++)
+        {
+            scanf("%d",&a[i]);
+        }
+        for(int i = 1; i <= m; i ++)
+        {
+            scanf("%d",&b[i]);
+        }
+        for(int i = 0; i < n; i ++)
+        {
+            for(int j = 0; j < m; j ++)
+            {
+                str[i][j] = '.';
+            }
+            str[i][m] = 0;
+        }
+        mem(pre,-1);
+        int size = v[b[1]].size();
+        for(int i = 0; i < size; i ++)
+        {
+            int sta = v[b[1]][i];
+            pre[1][sta][num[0][sta][0]][num[0][sta][1]][num[0][sta][2]][num[0][sta][3]][num[0][sta][4]] = 0;
+        }
+        int c = (m + 1) / 2;
+        for(int i = 2; i <= m; i ++)
+        {
+            size = v[b[i-1]].size();
+            for(int j = 0; j < size; j ++)
+            {
+                int sta = v[b[i-1]][j];
+                int size1 = v[b[i]].size();
+                for(int k = 0; k < size1; k ++)
+                {
+                    int sta1 = v[b[i]][k];
+                    for(int r1 = 0; r1 <= c; r1 ++)
+                    {
+                        if(n > 1)
+                        {
+                            for(int r2 = 0 ; r2 <= c; r2 ++)
+                            {
+                                if(n > 2)
+                                {
+                                    for(int r3 = 0; r3 <= c; r3 ++)
+                                    {
+                                        if(n > 3)
+                                        {
+                                            for(int r4 = 0; r4 <= c; r4 ++)
+                                            {
+                                                if(n > 4)
+                                                {
+                                                    for(int r5 = 0; r5 <= c; r5 ++)
+                                                    {
+                                                        if(pre[i-1][sta][r1][r2][r3][r4][r5] == -1)
+                                                        {
+                                                            continue;
+                                                        }
+                                                        pre[i][sta1][r1+num[sta][sta1][0]][r2+num[sta][sta1][1]][r3+num[sta][sta1][2]][r4+num[sta][sta1][3]][r5+num[sta][sta1][4]] = sta;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if(pre[i-1][sta][r1][r2][r3][r4][0] == -1)
+                                                    {
+                                                        continue;
+                                                    }
+                                                    pre[i][sta1][r1+num[sta][sta1][0]][r2+num[sta][sta1][1]][r3+num[sta][sta1][2]][r4+num[sta][sta1][3]][num[sta][sta1][4]] = sta;
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if(pre[i-1][sta][r1][r2][r3][0][0] == -1)
+                                            {
+                                                continue;
+                                            }
+                                            pre[i][sta1][r1+num[sta][sta1][0]][r2+num[sta][sta1][1]][r3+num[sta][sta1][2]][num[sta][sta1][3]][num[sta][sta1][4]] = sta;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if(pre[i-1][sta][r1][r2][0][0][0] == -1)
+                                    {
+                                        continue;
+                                    }
+                                    pre[i][sta1][r1+num[sta][sta1][0]][r2+num[sta][sta1][1]][num[sta][sta1][2]][num[sta][sta1][3]][num[sta][sta1][4]] = sta;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if(pre[i-1][sta][r1][0][0][0][0] == -1)
+                            {
+                                continue;
+                            }
+                            pre[i][sta1][r1+num[sta][sta1][0]][num[sta][sta1][1]][num[sta][sta1][2]][num[sta][sta1][3]][num[sta][sta1][4]] = sta;
+                        }
+                    }
+                }
+            }
+        }
+        size = v[b[m]].size();
+        int fa = -1, s;
+        for(int i = 0; i < size; i ++)
+        {
+            int sta = v[b[m]][i];
+            if(pre[m][sta][a[1]][a[2]][a[3]][a[4]][a[5]] != -1)
+            {
+                int cc = 0;
+                fa = pre[m][sta][a[1]][a[2]][a[3]][a[4]][a[5]];
+                s = sta;
+                while(sta)
+                {
+                    if(sta&1)
+                    {
+                        str[cc][m-1] = '*';
+                    }
+                    cc ++;
+                    sta >>= 1;
+                }
+                break;
+            }
+        }
+        int y = m - 1;
+        while(fa != -1)
+        {
+            for(int i = 1; i <= 5; i ++)
+            {
+                a[i] -= num[fa][s][i-1];
+            }
+            s = fa;
+            fa = pre[y][s][a[1]][a[2]][a[3]][a[4]][a[5]];
+            int re = s, cc = 0;
+            while(re)
+            {
+                if(re&1)
+                {
+                    str[cc][y-1] = '*';
+                }
+                cc ++;
+                re >>= 1;
+            }
+            y --;
+        }
+        for(int i = 0; i < n; i ++)
+        {
+            puts(str[i]);
+        }
+    }
+    return 0;
+}

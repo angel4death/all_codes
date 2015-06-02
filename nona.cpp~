@@ -1,0 +1,125 @@
+#include<iostream>
+#include<stdlib.h>
+using namespace std;
+int res_mask[6],*res_col[6],get[1<<21][21],r,c,*row,*col,found=0;
+void pre_get()
+{
+  for(int i=0;i<(1<<21);++i)
+    for(int j=0;j<21;++j)
+      get[i][j]=(i/(1<<j))%2;
+}
+void print_the_answer(int *ans[6])
+{
+  
+  for(int i=0;i<r;++i)
+    {
+      for(int j=0;j<c;++j)
+	{
+	  if(ans[i][j]==1)
+	     cout<<".";
+	  else
+	    cout<<"*";
+	}
+      cout<<endl;
+    }
+  exit(0);
+}
+void calculate(int ind,int mask)
+{
+  if(ind==r)
+    return;
+  int  isvalid=1;
+  int rcount=0;
+  int ccount[21];
+  for(int i=0;i<c;++i)
+    {
+      if(get[mask][i]==1)
+	if(i==0)
+	  rcount=1;
+	else
+	  if(get[mask][i-1]==0)
+	    rcount+=1;
+    }
+  if(rcount!=row[ind])
+    isvalid=0;
+  if(isvalid)
+    {
+      if(ind==0)
+	for(int i=0;i<c;++i)
+	  {
+	    if(get[mask][i]==1)
+	      ccount[i]=1;
+            else ccount[i]=0; 
+	    if(ccount[i]>col[i]){ isvalid=0;break;}
+	  }
+      else
+	for(int i=0;i<c;++i)
+	  {
+	    ccount[i]=res_col[ind-1][i];
+	    if(get[mask][i]==1)
+	      {
+		if(get[res_mask[ind-1]][i]==0)
+		  ccount[i]+=1;
+	      }
+	    if(ccount[i]>col[i]){isvalid=0;break;}
+	  }
+      if(isvalid)
+	if(ind==r-1)
+	  {
+	    for(int i=0;i<c;++i)
+	      {
+		if(ccount[i]!=col[i]){isvalid=0;break;}
+	      }
+	    if(isvalid)
+	      found=1;
+	  }
+    }
+  for(int i=mask+1;i<(1<<c);++i)
+    {
+      if(isvalid)
+	{
+	  for(int j=0;j<(1<<c);++j)
+	    {
+              res_mask[ind]=mask;
+	      res_col[ind]=ccount;
+	      calculate(ind+1,j);
+	      if(found==1)
+		{
+		  print_the_answer(res_col);
+		break;
+		}
+	      else
+		{
+		isvalid=0;
+		break;
+		}
+	    }
+	}
+      else if(!isvalid)
+	{
+	  calculate(ind,i);
+          if(found==1)
+	    return;
+          else
+            continue;
+	}
+    }
+}
+
+int main()
+{
+  cin>>r>>c;
+  row=new int[r]();
+  col=new int[c]();
+  for(int i=0;i<r;++i)
+    cin>>row[i];
+  for(int i=0;i<c;++i)
+    cin>>col[i];
+  pre_get();
+  calculate(0,0);
+  return 0;
+}
+
+
+
+

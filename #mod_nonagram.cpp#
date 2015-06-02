@@ -1,0 +1,28 @@
+#include<iostream>
+int r,c;
+int main()
+{
+  cin>>r>>c;
+  int mem[1<<c][r];
+  memset(mem,63,sizeof(mem));
+}
+void precompute()
+{
+  for(int i=0;i<(1<<c);++i)
+    for(int j=0;j<c;++j)
+      get[i][j]=(i/(1<<j))%2;
+}
+int calc(int idx,int mask)
+{
+  int &res=mem[mask][idx];
+  if(res!=-1)
+    return ;
+  for(int i=0;i<(1<<c);++i)
+    {
+      isvalid=1;
+      rcount=0;
+    
+      for(int j=0;j<c;++j)
+	{
+         
+  		 
